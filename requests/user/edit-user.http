@@ -1,0 +1,7 @@
+
+PUT http://localhost:8080/user/1ded2207-a66d-454f-89c5-4855eb05167b HTTP/1.1
+content-type: application/json
+
+{
+    "username": "teste3"
+}

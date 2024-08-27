@@ -1,0 +1,26 @@
+
+PUT http://localhost:8080/hole/76c2a2a9-10f5-4a19-92d9-faa816320d8e HTTP/1.1
+content-type: application/json
+
+{
+    "holeNumber": "string2",
+    "initialDate": "2024-08-24",
+    "finalDate": "2024-08-24",
+    "name": "string",
+    "workDescription": "string",
+    "quota": "string",
+    "waterLevel": 1,
+    "interval": "string",
+    "waterLevelTwo": 2,
+    "intervalTwo": "string",
+    "torque": "string",
+    "coating": "string",
+    "ultimateDigger": "string",
+    "initialHelical": "string",
+    "finalHelical": "string",
+    "printSpt": "string",
+    "stop": "string",
+    "textPoll": "string",
+    "prober": "string",
+    "pageLines": "string"
+}

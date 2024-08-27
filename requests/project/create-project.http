@@ -1,0 +1,15 @@
+
+POST http://localhost:8080/project HTTP/1.1
+content-type: application/json
+
+{
+    "projectNumber": "123455",
+    "client": "ACME SCorporation",
+    "projectAlphanumericNumber": "ABaC123",
+    "workDescription": "Constructaion of a new office building",
+    "workSite": "New Yaork",
+    "releaseDate": "2024-08-23",
+    "initialDate": "2024-08-24",
+    "finalDate": "2024-12-31",
+    "headerText": "Proaject for New Office Building"
+}

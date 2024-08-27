@@ -1,0 +1,15 @@
+
+PUT http://localhost:8080/project/d1c4986c-2aa9-40cb-8abd-dd4b097b324a HTTP/1.1
+content-type: application/json
+
+{
+    "projectNumber": "string",
+  "client": "string",
+  "projectAlphanumericNumber": "string",
+  "workDescription": "string",
+  "workSite": "string",
+  "releaseDate": "2024-08-23",
+  "initialDate": "2024-08-24",
+  "finalDate": "2024-12-31",
+  "headerText": "string"
+}

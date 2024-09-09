@@ -1,6 +1,11 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+} from "typeorm";
 
-export class CreateTableProject1724431044644 implements MigrationInterface {
+export class CreateTableProject1715017919347 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
@@ -10,6 +15,8 @@ export class CreateTableProject1724431044644 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
+            generationStrategy: "uuid",
+            default: "uuid_generate_v4()", // Ajuste conforme o banco de dados
           },
           {
             name: "project_number",
@@ -34,7 +41,7 @@ export class CreateTableProject1724431044644 implements MigrationInterface {
           {
             name: "work_site",
             type: "varchar",
-            length: "100",
+            length: "255",
           },
           {
             name: "release_date",
@@ -53,12 +60,26 @@ export class CreateTableProject1724431044644 implements MigrationInterface {
             type: "varchar",
             length: "255",
           },
+          {
+            name: "user_id",
+            type: "uuid",
+          },
         ],
+      })
+    );
+
+    await queryRunner.createForeignKey(
+      "project",
+      new TableForeignKey({
+        columnNames: ["user_id"],
+        referencedTableName: "user",
+        referencedColumnNames: ["id"],
+        onDelete: "CASCADE",
       })
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable("project", true, true, true);
+    await queryRunner.dropTable("project");
   }
 }

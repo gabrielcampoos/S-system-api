@@ -1,0 +1,17 @@
+
+POST http://localhost:8080/profundity HTTP/1.1
+content-type: application/json
+
+[
+    {
+        "profundity0": 0,
+        "spt": 1,
+        "hit1": 1,
+        "profundity1": 1,
+        "hit2": 1,
+        "profundity2": 1,
+        "hit3": 1,
+        "profundity3": 1
+       
+    }
+]

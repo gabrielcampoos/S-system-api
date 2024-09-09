@@ -1,5 +1,16 @@
-import { BeforeInsert, Column, Entity, PrimaryColumn } from "typeorm";
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  OneToMany,
+  ManyToOne,
+  PrimaryColumn,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { randomUUID } from "crypto";
+import { HoleEntity } from "./hole.entity";
+import { UserEntity } from "./user.entity";
 
 @Entity({ name: "project" })
 export class ProjectEntity {
@@ -32,6 +43,13 @@ export class ProjectEntity {
 
   @Column({ name: "header_text" })
   headerText!: string;
+
+  @OneToMany(() => HoleEntity, (hole) => hole.project, { cascade: true })
+  holes!: HoleEntity[];
+
+  @ManyToOne(() => UserEntity, (user) => user.projects)
+  @JoinColumn({ name: "user_id" })
+  user!: UserEntity;
 
   @BeforeInsert()
   beforeInsert() {

@@ -1,6 +1,7 @@
 import { DatabaseConnection } from "../../../../main/database/typeorm.connection";
-import { Hole } from "../../../models";
-import { HoleEntity } from "../../../shared/entities";
+import { Hole, Layer } from "../../../models";
+import { HoleEntity, ProjectEntity } from "../../../shared/entities";
+import { UserRepository } from "../../user/repository";
 import { CreateHoleDto, UpdateHoleDto } from "../dtos";
 
 export class HoleRepository {
@@ -16,16 +17,40 @@ export class HoleRepository {
     return this.entityToModel(holeExists);
   }
 
-  async create(hole: CreateHoleDto): Promise<Hole> {
-    const createHole = this._manager.create(HoleEntity, { ...hole });
+  async createHolesForProject(
+    projectId: string,
+    holesData: CreateHoleDto[]
+  ): Promise<Hole[]> {
+    if (!Array.isArray(holesData)) {
+      throw new TypeError("holesData must be an array");
+    }
 
-    const createdHole = await this._manager.save(createHole);
+    const project = await this._manager.findOne(ProjectEntity, {
+      where: { id: projectId },
+      relations: ["holes"],
+    });
 
-    return this.entityToModel(createdHole);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const holes = holesData.map((holeData) => {
+      return this._manager.create(HoleEntity, { ...holeData, project });
+    });
+
+    const createdHoles = await this._manager.save(holes);
+    return createdHoles.map((hole) => this.entityToModel(hole));
   }
 
-  async listHoles(): Promise<Hole[]> {
-    const listHoles = await this._manager.find(HoleEntity);
+  async listHoles(projectId: string): Promise<Hole[]> {
+    if (!projectId) {
+      throw new Error("Project ID is missing.");
+    }
+
+    const listHoles = await this._manager.find(HoleEntity, {
+      where: { project: { id: projectId } },
+      relations: ["layers"],
+    });
 
     return listHoles.map((hole) => this.entityToModel(hole));
   }
@@ -90,7 +115,7 @@ export class HoleRepository {
   }
 
   private entityToModel(dataDB: HoleEntity): Hole {
-    return new Hole(
+    const hole = new Hole(
       dataDB.id,
       dataDB.holeNumber,
       dataDB.initialDate,
@@ -113,5 +138,24 @@ export class HoleRepository {
       dataDB.prober,
       dataDB.pageLines
     );
+
+    if (dataDB.layers) {
+      dataDB.layers.forEach((layerEntity) => {
+        const layer = new Layer(
+          layerEntity.id,
+          layerEntity.projectNumber,
+          layerEntity.hole?.id,
+          layerEntity.code,
+          layerEntity.depth,
+          layerEntity.type,
+          layerEntity.description,
+          layerEntity.hatch
+        );
+
+        hole.addLayer(layer);
+      });
+    }
+
+    return hole;
   }
 }

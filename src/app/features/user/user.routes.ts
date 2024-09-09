@@ -12,7 +12,7 @@ export default () => {
   );
 
   router.get("/user", UserController.listUser);
-  router.get("/validateDataUser", UserController.getUser);
+  router.get("/getUser/:id", UserController.getUser);
 
   router.put("/user/:id", UserController.editUser);
 

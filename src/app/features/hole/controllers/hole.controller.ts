@@ -11,17 +11,38 @@ import {
 
 export class HoleController {
   static async createHole(request: Request, response: Response) {
-    const hole: CreateHoleDto = request.body;
+    const { projectId } = request.params;
+
+    if (!projectId) {
+      return httpHelper.badRequestError(
+        response,
+        Result.error(400, "ID do projeto é obrigatório.")
+      );
+    }
+
+    const hole: CreateHoleDto[] = Array.isArray(request.body)
+      ? request.body
+      : [];
+
+    if (hole.length === 0) {
+      return httpHelper.badRequestError(
+        response,
+        Result.error(400, "Dados dos furos inválidos.")
+      );
+    }
 
     try {
       const usecase = new CreateHoleUsecase();
 
-      const result = await usecase.execute(hole);
+      const result = await usecase.execute(projectId, hole);
 
-      if (!result.success) return httpHelper.badRequestError(response, result);
+      if (!result.success) {
+        return httpHelper.badRequestError(response, result);
+      }
 
       return httpHelper.success(response, result);
     } catch (error: any) {
+      console.error("Error creating holes:", error);
       return httpHelper.badRequestError(
         response,
         Result.error(500, error.toString())
@@ -30,10 +51,19 @@ export class HoleController {
   }
 
   static async listHoles(request: Request, response: Response) {
+    const { projectId } = request.params;
+
+    if (!projectId) {
+      return httpHelper.badRequestError(
+        response,
+        Result.error(400, "Project ID is missing.")
+      );
+    }
+
     try {
       const usecase = new ListAllHolesUsecase();
 
-      const result = await usecase.execute();
+      const result = await usecase.execute(projectId);
 
       return httpHelper.success(response, result);
     } catch (error: any) {

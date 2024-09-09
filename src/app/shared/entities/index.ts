@@ -2,3 +2,4 @@ export * from "./base.entity";
 export * from "./user.entity";
 export * from "./project.entity";
 export * from "./hole.entity";
+export * from "./layer.entity";

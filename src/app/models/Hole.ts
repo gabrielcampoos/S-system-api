@@ -1,4 +1,5 @@
 import { Base } from "./Base";
+import { Layer, LayerJson } from "./Layer";
 
 export interface HoleJson {
   id: string;
@@ -22,6 +23,7 @@ export interface HoleJson {
   textPoll: string;
   prober: string;
   pageLines: string;
+  layers: LayerJson[];
 }
 
 interface EditHoleDto {
@@ -48,6 +50,8 @@ interface EditHoleDto {
 }
 
 export class Hole extends Base {
+  private _layers: Layer[] = [];
+
   constructor(
     _id: string,
     private _holeNumber: string,
@@ -69,9 +73,11 @@ export class Hole extends Base {
     private _stop: string,
     private _textPoll: string,
     private _prober: string,
-    private _pageLines: string
+    private _pageLines: string,
+    layers: Layer[] = [] // Adicionando a opção de inicializar com uma lista de camadas
   ) {
     super(_id);
+    this._layers = layers; // Inicializando a lista de camadas
   }
 
   private static getCurrentDate(): Date {
@@ -103,170 +109,112 @@ export class Hole extends Base {
       textPoll: this._textPoll,
       prober: this._prober,
       pageLines: this._pageLines,
+      layers: this._layers.map((layer) => layer.toJson()), // Certifique-se de que Layer tem um método toJson
     };
   }
 
-  editHole(data: EditHoleDto): boolean {
-    if (data.holeNumber) {
-      if (data.holeNumber?.length < 0) {
-        return false;
-      }
+  public editHole(data: EditHoleDto): boolean {
+    const {
+      holeNumber,
+      initialDate,
+      finalDate,
+      name,
+      workDescription,
+      quota,
+      waterLevel,
+      interval,
+      waterLevelTwo,
+      intervalTwo,
+      torque,
+      coating,
+      ultimateDigger,
+      initialHelical,
+      finalHelical,
+      printSpt,
+      stop,
+      textPoll,
+      prober,
+      pageLines,
+    } = data;
 
-      this._holeNumber = data.holeNumber;
+    if (holeNumber !== undefined) {
+      this._holeNumber = holeNumber;
     }
-
-    if (data.initialDate) {
-      if (data.initialDate === null) {
-        return false;
-      }
-
-      this._initialDate = data.initialDate;
+    if (initialDate !== undefined) {
+      this._initialDate = initialDate;
     }
-
-    if (data.finalDate) {
-      if (data.finalDate === null) {
-        return false;
-      }
-
-      this._finalDate = data.finalDate;
+    if (finalDate !== undefined) {
+      this._finalDate = finalDate;
     }
-
-    if (data.workDescription) {
-      if (data.workDescription?.length < 0) {
-        return false;
-      }
-
-      this._workDescription = data.workDescription;
+    if (name !== undefined) {
+      this._name = name;
     }
-
-    if (data.name) {
-      if (data.name?.length < 0) {
-        return false;
-      }
-
-      this._name = data.name;
+    if (workDescription !== undefined) {
+      this._workDescription = workDescription;
     }
-
-    if (data.workDescription) {
-      if (data.workDescription === null) {
-        return false;
-      }
-
-      this._workDescription = data.workDescription;
+    if (quota !== undefined) {
+      this._quota = quota;
     }
-
-    if (data.quota) {
-      if (data.quota?.length < 0) {
-        return false;
-      }
-
-      this._quota = data.quota;
+    if (waterLevel !== undefined) {
+      this._waterLevel = waterLevel;
     }
-
-    if (data.waterLevel) {
-      if (data.waterLevel?.length < 0) {
-        return false;
-      }
-
-      this._waterLevel = data.waterLevel;
+    if (interval !== undefined) {
+      this._interval = interval;
     }
-
-    if (data.interval) {
-      if (data.interval?.length < 0) {
-        return false;
-      }
-
-      this._interval = data.interval;
+    if (waterLevelTwo !== undefined) {
+      this._waterLevelTwo = waterLevelTwo;
     }
-
-    if (data.waterLevelTwo) {
-      if (data.waterLevelTwo?.length < 0) {
-        return false;
-      }
-
-      this._waterLevelTwo = data.waterLevelTwo;
+    if (intervalTwo !== undefined) {
+      this._intervalTwo = intervalTwo;
     }
-
-    if (data.torque) {
-      if (data.torque?.length < 0) {
-        return false;
-      }
-
-      this._torque = data.torque;
+    if (torque !== undefined) {
+      this._torque = torque;
     }
-
-    if (data.coating) {
-      if (data.coating?.length < 0) {
-        return false;
-      }
-
-      this._coating = data.coating;
+    if (coating !== undefined) {
+      this._coating = coating;
     }
-
-    if (data.ultimateDigger) {
-      if (data.ultimateDigger?.length < 0) {
-        return false;
-      }
-
-      this._ultimateDigger = data.ultimateDigger;
+    if (ultimateDigger !== undefined) {
+      this._ultimateDigger = ultimateDigger;
     }
-
-    if (data.initialHelical) {
-      if (data.initialHelical?.length < 0) {
-        return false;
-      }
-
-      this._initialHelical = data.initialHelical;
+    if (initialHelical !== undefined) {
+      this._initialHelical = initialHelical;
     }
-
-    if (data.finalHelical) {
-      if (data.finalHelical?.length < 0) {
-        return false;
-      }
-
-      this._finalHelical = data.finalHelical;
+    if (finalHelical !== undefined) {
+      this._finalHelical = finalHelical;
     }
-
-    if (data.printSpt) {
-      if (data.printSpt?.length < 0) {
-        return false;
-      }
-
-      this._printSpt = data.printSpt;
+    if (printSpt !== undefined) {
+      this._printSpt = printSpt;
     }
-
-    if (data.stop) {
-      if (data.stop?.length < 0) {
-        return false;
-      }
-
-      this._stop = data.stop;
+    if (stop !== undefined) {
+      this._stop = stop;
     }
-
-    if (data.textPoll) {
-      if (data.textPoll?.length < 0) {
-        return false;
-      }
-
-      this._textPoll = data.textPoll;
+    if (textPoll !== undefined) {
+      this._textPoll = textPoll;
     }
-
-    if (data.prober) {
-      if (data.prober?.length < 0) {
-        return false;
-      }
-
-      this._prober = data.prober;
+    if (prober !== undefined) {
+      this._prober = prober;
     }
-
-    if (data.pageLines) {
-      if (data.pageLines?.length < 0) {
-        return false;
-      }
-
-      this._pageLines = data.pageLines;
+    if (pageLines !== undefined) {
+      this._pageLines = pageLines;
     }
 
     return true;
+  }
+
+  public getId(): string {
+    return this._id;
+  }
+
+  // Adicionando métodos para manipular a lista de camadas
+  public addLayer(layer: Layer): void {
+    this._layers.push(layer);
+  }
+
+  public removeLayer(layerId: string): void {
+    this._layers = this._layers.filter((layer) => layer.getId() !== layerId);
+  }
+
+  public getLayers(): Layer[] {
+    return this._layers;
   }
 }

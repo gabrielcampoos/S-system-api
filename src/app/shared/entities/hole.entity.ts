@@ -1,5 +1,17 @@
-import { BeforeInsert, Column, Entity, PrimaryColumn } from "typeorm";
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { randomUUID } from "crypto";
+import { ProjectEntity } from "./project.entity";
+import { UserEntity } from "./user.entity";
+import { LayerEntity } from "./layer.entity";
 
 @Entity({ name: "hole" })
 export class HoleEntity {
@@ -65,6 +77,13 @@ export class HoleEntity {
 
   @Column({ name: "page_lines" })
   pageLines!: string;
+
+  @ManyToOne(() => ProjectEntity, (project) => project.holes)
+  @JoinColumn({ name: "project_id" })
+  project!: ProjectEntity;
+
+  @OneToMany(() => LayerEntity, (layer) => layer.hole)
+  layers!: LayerEntity[];
 
   @BeforeInsert()
   beforeInsert() {

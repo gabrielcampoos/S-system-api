@@ -1,9 +1,10 @@
 
-PUT http://localhost:8080/project/d1c4986c-2aa9-40cb-8abd-dd4b097b324a HTTP/1.1
+PUT http://localhost:8080/project/3e68f3ff-34b8-49b4-9b2a-903de1c21078 HTTP/1.1
 content-type: application/json
+x-user-id: 6119ec48-1dd2-444f-a37b-9751ee3ee4dd
 
 {
-    "projectNumber": "string",
+  "projectNumber": "string3",
   "client": "string",
   "projectAlphanumericNumber": "string",
   "workDescription": "string",

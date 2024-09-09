@@ -6,15 +6,17 @@ export class DeleteUserUsecase {
     const userRepository = new UserRepository();
 
     const userExists = await userRepository.verifyIfUserExistsById(id);
+    console.log("Usuário encontrado:", userExists);
 
-    if (!userExists)
+    if (!userExists) {
       return Result.error(
         400,
         "Usuário não encontrado. Não foi possível excluir."
       );
+    }
 
     await userRepository.deleteUser(id);
 
-    return Result.success(200, "Usuário excluido com sucesso.", id);
+    return Result.success(200, "Usuário excluído com sucesso.", id);
   }
 }

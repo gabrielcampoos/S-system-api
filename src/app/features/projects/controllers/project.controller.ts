@@ -8,15 +8,17 @@ import {
   GetProjectUsecase,
   ListAllProjectsUsecase,
 } from "../usecases";
+import { UpdateHoleDto } from "../../hole/dtos";
 
 export class ProjectController {
   static async createProject(request: Request, response: Response) {
+    const { userId } = request.params;
     const project: CreateProjectDto = request.body;
 
     try {
       const usecase = new CreateProjectUsecase();
 
-      const result = await usecase.execute(project);
+      const result = await usecase.execute(userId, project);
 
       if (!result.success) return httpHelper.badRequestError(response, result);
 
@@ -30,10 +32,19 @@ export class ProjectController {
   }
 
   static async listProjects(request: Request, response: Response) {
+    const { userId } = request.params;
+
+    if (!userId) {
+      return httpHelper.badRequestError(
+        response,
+        Result.error(400, "User ID is missing.")
+      );
+    }
+
     try {
       const usecase = new ListAllProjectsUsecase();
 
-      const result = await usecase.execute();
+      const result = await usecase.execute(userId);
 
       return httpHelper.success(response, result);
     } catch (error: any) {
@@ -64,7 +75,14 @@ export class ProjectController {
   }
 
   static async editProject(request: Request, response: Response) {
+    const userId = request.user?.id;
+
+    if (!userId) {
+      return response.status(401).json({ message: "Usuário não autenticado." });
+    }
+
     const { id } = request.params;
+
     const {
       projectNumber,
       client,
@@ -77,22 +95,27 @@ export class ProjectController {
       headerText,
     } = request.body;
 
+    const projectData = {
+      id,
+      newData: {
+        projectNumber,
+        client,
+        projectAlphanumericNumber,
+        workDescription,
+        workSite,
+        releaseDate,
+        initialDate,
+        finalDate,
+        headerText,
+      },
+    };
+
     try {
       const usecase = new EditProjectUsecase();
 
-      const result = await usecase.execute({
+      const result = await usecase.execute(userId, {
         id,
-        newData: {
-          projectNumber,
-          client,
-          projectAlphanumericNumber,
-          workDescription,
-          workSite,
-          releaseDate,
-          initialDate,
-          finalDate,
-          headerText,
-        },
+        newData: projectData.newData,
       });
 
       if (!result.success) return httpHelper.badRequestError(response, result);

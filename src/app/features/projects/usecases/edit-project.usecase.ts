@@ -1,9 +1,10 @@
 import { Result, ResultDto } from "../../../shared/utils";
-import { EditProjectDto } from "../dtos";
+import { UpdateHoleDto } from "../../hole/dtos";
+import { EditProjectDto, UpdateProjectDto } from "../dtos";
 import { ProjectRepository } from "../repository";
 
 export class EditProjectUsecase {
-  async execute(data: EditProjectDto): Promise<ResultDto> {
+  async execute(userId: string, data: EditProjectDto): Promise<ResultDto> {
     const { id, newData } = data;
 
     const projectRepository = new ProjectRepository();
@@ -12,7 +13,17 @@ export class EditProjectUsecase {
 
     if (!projectExists) return Result.error(400, "Projeto não encontrado.");
 
-    const projectUpdate = projectExists.editProject({
+    if (projectExists.getUserId() !== userId) {
+      return Result.error(403, "Usuário não autorizado a editar este projeto.");
+    }
+
+    const projectUpdate = projectExists.editProject(newData);
+
+    if (!projectUpdate)
+      return Result.error(400, "Projeto não pode ser editado.");
+
+    const updateProjectDto: UpdateProjectDto = {
+      id,
       projectNumber: newData.projectNumber,
       client: newData.client,
       projectAlphanumericNumber: newData.projectAlphanumericNumber,
@@ -22,26 +33,22 @@ export class EditProjectUsecase {
       initialDate: newData.initialDate,
       finalDate: newData.finalDate,
       headerText: newData.headerText,
-    });
+    };
 
-    if (!projectUpdate)
-      return Result.error(400, "Projeto não pode ser editado.");
+    await projectRepository.editProjectAndHoles(userId, updateProjectDto);
 
-    const projectJson = projectExists.toJson();
+    const updatedProject = await projectRepository.verifyIfProjectExistsById(
+      id
+    );
+    const updatedProjectJson = updatedProject?.toJson();
 
-    projectRepository.editProject({
-      id,
-      projectNumber: projectJson.projectNumber,
-      client: projectJson.client,
-      projectAlphanumericNumber: projectJson.projectAlphanumericNumber,
-      workDescription: projectJson.workDescription,
-      workSite: projectJson.workSite,
-      releaseDate: projectJson.releaseDate,
-      initialDate: projectJson.initialDate,
-      finalDate: projectJson.finalDate,
-      headerText: projectJson.headerText,
-    });
+    if (!updatedProjectJson)
+      return Result.error(400, "Falha ao obter projeto atualizado.");
 
-    return Result.success(200, "Projeto editado com sucesso.", projectJson);
+    return Result.success(
+      200,
+      "Projeto editado com sucesso.",
+      updatedProjectJson
+    );
   }
 }

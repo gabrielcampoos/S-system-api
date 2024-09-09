@@ -5,12 +5,12 @@ export default () => {
   const router = Router();
 
   router.post(
-    "/hole",
+    "/hole/:projectId",
 
     HoleController.createHole
   );
 
-  router.get("/hole", HoleController.listHoles);
+  router.get("/hole/:projectId", HoleController.listHoles);
   router.get("/validateDataHole/:id", HoleController.getHole);
 
   router.put("/hole/:id", HoleController.editHole);

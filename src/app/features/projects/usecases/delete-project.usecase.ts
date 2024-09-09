@@ -5,16 +5,23 @@ export class DeleteProjectUsecase {
   async execute(id: string): Promise<ResultDto> {
     const projectRepository = new ProjectRepository();
 
-    const projectExists = await projectRepository.verifyIfProjectExistsById(id);
-
-    if (!projectExists)
-      return Result.error(
-        400,
-        "Projeto não encontrado. Não foi possível excluir."
+    try {
+      const projectExists = await projectRepository.verifyIfProjectExistsById(
+        id
       );
 
-    await projectRepository.deleteProject(id);
+      if (!projectExists) {
+        return Result.error(
+          400,
+          "Projeto não encontrado. Não foi possível excluir."
+        );
+      }
 
-    return Result.success(200, "Projeto excluido com sucesso.", id);
+      await projectRepository.deleteProject(id);
+
+      return Result.success(200, "Projeto excluído com sucesso.", id);
+    } catch (error: any) {
+      return Result.error(500, `Erro ao excluir o projeto: ${error.message}`);
+    }
   }
 }

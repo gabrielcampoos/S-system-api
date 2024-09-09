@@ -1,0 +1,3 @@
+DELETE  http://localhost:8080/hole/4d61df26-2955-4638-8f4b-2e2fd93635af HTTP/1.1
+content-type: application/json
+

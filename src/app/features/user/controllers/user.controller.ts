@@ -45,9 +45,9 @@ export class UserController {
   }
 
   static async getUser(request: Request, response: Response) {
-    try {
-      const { id } = request.body;
+    const { id } = request.params;
 
+    try {
       const usecase = new GetUserUsecase();
 
       const result = await usecase.execute(id);
@@ -86,10 +86,13 @@ export class UserController {
   static async deleteUser(request: Request, response: Response) {
     const { id } = request.params;
 
+    console.log("ID recebido:", id);
+
     try {
       const usecase = new DeleteUserUsecase();
 
       const result = await usecase.execute(id);
+      console.log("Resultado do usecase:", result);
 
       if (!result.success) return httpHelper.badRequestError(response, result);
 

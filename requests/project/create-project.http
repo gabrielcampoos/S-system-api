@@ -1,5 +1,5 @@
 
-POST http://localhost:8080/project HTTP/1.1
+POST http://localhost:8080/project/79516df6-fe57-4d74-bfea-352fccb72403 HTTP/1.1
 content-type: application/json
 
 {

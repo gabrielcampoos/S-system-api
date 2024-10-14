@@ -13,6 +13,7 @@ export default () => {
 
   router.get("/project/:userId", ProjectController.listProjects);
   router.get("/validateDataProject/:id", ProjectController.getProject);
+  router.post("/projectsByDate", ProjectController.listProjectsByDate);
 
   router.put("/project/:id", authMiddleware, ProjectController.editProject);
 

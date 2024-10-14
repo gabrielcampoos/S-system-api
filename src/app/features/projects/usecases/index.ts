@@ -3,3 +3,4 @@ export * from "./list-all-projects.usecase";
 export * from "./get-project.usecase";
 export * from "./edit-project.usecase";
 export * from "./delete-project.usecase";
+export * from "./list-projects-by-date.usecase";

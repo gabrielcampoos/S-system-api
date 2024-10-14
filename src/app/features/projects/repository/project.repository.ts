@@ -1,3 +1,4 @@
+import { Between, LessThan, MoreThan } from "typeorm";
 import { DatabaseConnection } from "../../../../main/database/typeorm.connection";
 import { Hole, Project, User } from "../../../models";
 import {
@@ -139,6 +140,38 @@ export class ProjectRepository {
 
   async deleteHoles(holeIds: string[]): Promise<void> {
     await this._manager.delete(HoleEntity, holeIds);
+  }
+
+  async listProjectsByDateRange(
+    startDate: string,
+    endDate: string
+  ): Promise<Project[]> {
+    if (!startDate || !endDate) {
+      throw new Error("Both start and end dates must be provided.");
+    }
+
+    // Converte as datas para o formato adequado
+    const start = new Date(startDate + "T00:00:00Z"); // Início do dia
+    const end = new Date(endDate + "T23:59:59Z"); // Fim do dia
+
+    const listProjects = await this._manager.find(ProjectEntity, {
+      where: [
+        {
+          initialDate: Between(start, end), // Projetos que começam no intervalo
+        },
+        {
+          finalDate: Between(start, end), // Projetos que terminam no intervalo
+        },
+        {
+          // Projetos que começam antes do intervalo e terminam depois
+          initialDate: LessThan(end),
+          finalDate: MoreThan(start),
+        },
+      ],
+      relations: ["user", "holes"],
+    });
+
+    return listProjects.map((project) => this.entityToModel(project));
   }
 
   private entityToModel(dataDB: ProjectEntity): Project {

@@ -6,6 +6,7 @@ import {
   DeleteProjectUsecase,
   EditProjectUsecase,
   GetProjectUsecase,
+  ListAllProjectsByDateUsecase,
   ListAllProjectsUsecase,
 } from "../usecases";
 import { UpdateHoleDto } from "../../hole/dtos";
@@ -45,6 +46,30 @@ export class ProjectController {
       const usecase = new ListAllProjectsUsecase();
 
       const result = await usecase.execute(userId);
+
+      return httpHelper.success(response, result);
+    } catch (error: any) {
+      return httpHelper.badRequestError(
+        response,
+        Result.error(500, error.toString())
+      );
+    }
+  }
+
+  static async listProjectsByDate(request: Request, response: Response) {
+    const { startDate, endDate } = request.body;
+
+    if (!startDate || !endDate) {
+      return httpHelper.badRequestError(
+        response,
+        Result.error(400, "Start date and end date must be provided.")
+      );
+    }
+
+    try {
+      const usecase = new ListAllProjectsByDateUsecase();
+
+      const result = await usecase.execute(String(startDate), String(endDate));
 
       return httpHelper.success(response, result);
     } catch (error: any) {
